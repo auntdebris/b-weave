@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo 2 | Hero Background | Bridgeweave</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      .hero {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .img-menu {
+        width: 100%;
+        height: auto;
+        top: 0;
+        left: 0;
+      }
+
+      .img-text {
+        position: absolute;
+        top: 50%;
+        left: 100px;
+        width: 55vw;
+        max-width: 1060px;
+        height: auto;
+        transform: translateY(-50%);
+      }
+
+      .img-logo {
+        position: absolute;
+        bottom: 100px;
+        right: 50px;
+        width: 25vw;
+        max-width: 520px;
+        height: auto;
+      }
+
+      canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <img class="img-menu" src="design/menu.svg" alt="" />
+      <img class="img-text" src="design/text.svg" alt="" />
+      <img class="img-logo" src="design/logo.svg" alt="" />
+    </div>
+
+    <script src="js/vendor/three.min.js"></script>
+    <script>
+      var camera,
+        scene,
+        renderer,
+        geometry,
+        material,
+        mesh,
+        mesh2,
+        texture,
+        light,
+        controls;
+
+      init();
+      animate();
+
+      function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(
+          50,
+          window.innerWidth / window.innerHeight,
+          1,
+          10000
+        );
+        camera.position.z = 500;
+        camera.position.x = -500;
+        camera.position.y = -500;
+        camera.lookAt(scene.position);
+        scene.add(camera);
+
+        light = new THREE.DirectionalLight(0xe0e0ff, 1.5);
+        light.position.set(200, -500, -200);
+        scene.add(light);
+
+        scene.fog = new window.THREE.FogExp2(0x000000, 0.001);
+
+        // Create the floor geometry
+        geometry = new THREE.PlaneGeometry(10000, 10000, 1, 1);
+        geometry.rotateX(-Math.PI / 2);
+        // Load the texture and assign it to the material
+        THREE.ImageUtils.crossOrigin = "";
+        texture = THREE.ImageUtils.loadTexture(
+          // "https://errvald.github.io/images/post/floor-texture.png"
+          "textures/floor-texture-4.png"
+        );
+        texture2 = THREE.ImageUtils.loadTexture(
+          // "https://errvald.github.io/images/post/floor-texture.png"
+          "textures/floor-texture-5.png"
+        );
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(45, 45);
+        texture2.repeat.set(45, 45);
+
+        material = new THREE.MeshLambertMaterial({
+          map: texture,
+          transparent: true,
+          side: window.THREE.BackSide
+        });
+        material2 = new THREE.MeshLambertMaterial({
+          map: texture2,
+          transparent: true,
+          side: window.THREE.BackSide
+        });
+
+        // Create the mesh for the floor and add it to the scene
+        mesh = new THREE.Mesh(geometry, material);
+        mesh2 = new THREE.Mesh(geometry, material2);
+        scene.add(mesh);
+        scene.add(mesh2);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        render();
+      }
+
+      function render() {
+        texture.offset.y += 0.02;
+        texture2.offset.y += 0.025;
+        renderer.render(scene, camera);
+      }
+    </script>
+  </body>
+</html>
